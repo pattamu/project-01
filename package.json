@@ -1,0 +1,26 @@
+{
+  "name": "project-01",
+  "version": "1.0.0",
+  "description": "Functionup project01",
+  "main": "index.js",
+  "scripts": {
+    "start": "npx nodemon src/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pattamu/project-01.git"
+  },
+  "author": "Sandeep,Moulesh,Gautam,Satyam",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/pattamu/project-01/issues"
+  },
+  "homepage": "https://github.com/pattamu/project-01#readme",
+  "dependencies": {
+    "body-parser": "^1.20.0",
+    "express": "^4.18.0",
+    "mongoose": "^6.3.1",
+    "nodemon": "^2.0.15"
+  }
+}
