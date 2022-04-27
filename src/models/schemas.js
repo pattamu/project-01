@@ -30,8 +30,8 @@ const blogSchema = mongoose.Schema({
     subcategory: {type: [String]}, 
     isDeleted: {type: Boolean, default: false}, 
     isPublished: {type: Boolean, default: false},
-    publishedAt: {type: Date, default: Date.now()}, 
-    deletedAt: {type: Date, default: Date.now()}
+    publishedAt: {type: Date}, 
+    deletedAt: {type: Date}
 }, { timestamps: true })
 
 const author = mongoose.model('Author', authorSchema) //authors
