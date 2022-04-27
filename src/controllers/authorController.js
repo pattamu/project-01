@@ -1,6 +1,9 @@
 const {author, blog} = require("../models/schemas")
 
-//createAuthor API by Sandeep
+
+// ________________________________________________________*************_________________________________________________________________
+                            //createAuthor API by Sandeep
+
 const createAuthor = async (req,res) => {
     try{
         let data = req.body
@@ -13,7 +16,9 @@ const createAuthor = async (req,res) => {
     }
 }
 
-//Creat Blog by Moulesh_Chavan
+// ________________________________________________________*************_________________________________________________________________
+                            //Create Blog by Moulesh_Chavan
+
 const createBlogs = async (req,res) => {
         try{
             let data = req.body
@@ -30,7 +35,8 @@ const createBlogs = async (req,res) => {
         }
     }
 //__________________________________________________*************______________________________________________________________
-//createBlog API by Sandeep
+                            //createBlog API by Sandeep
+
 // const createBlogs = async (req,res) => {
 //     try{
 //         let data = req.body
@@ -48,8 +54,8 @@ const createBlogs = async (req,res) => {
 // }
 
 // ________________________________________________________*************_________________________________________________________________
+                            //   createBlog API by Gautam kumar
 
-// createBlog API by Gautam kumar
 // const createBlogs = async function(req, res){
 //     try {
 //     let getData =  req.body
@@ -72,28 +78,51 @@ const createBlogs = async (req,res) => {
 // }
 // }
 
-//getBlog by Gautam_Kumar
-const getBlogs = async function(req, res){
-    // let getAllBlogs = await blog.find({isDeleted: false, isPublished: true})
-    // if(getAllBlogs.length === 0) return res.status(404).send({status: false, msg:"document not Found"})
-    // console.log(getAllBlogs);
-    // res.status(200).send({status:true, msg: getAllBlogs})
+// ________________________________________________________*************_________________________________________________________________
+                                    //getBlog API by Sandeep
 
-   try{
+const getBlogs = async (req,res) => {
+    try{
         req.query.isDeleted = false
-    req.query.isPublished = true
-    let filter = req.query
-
-
-    let getDetails = await blog.find(filter)
-    if(!getDetails.length) return res.status(404).send({status: false, msg:"document not Found"})
-    res.status(200).send({status: true, msg: getDetails})
-}
-catch(err){
+        req.query.isPublished = true
+        let filter = await blog.find(req.query)
+        if(!filter.length)
+        return res.status(404).send({status: false, msg: "No such documents found"})
+        res.status(200).send({status: true, data: filter})
+    }
+    catch(err){
         console.log(err.message)
         res.status(500).send({status: false, msg: err.message})
+    }
 }
-}
+
+// ________________________________________________________*************_________________________________________________________________
+                            //getBlog by Gautam_Kumar
+
+// const getBlogs = async function(req, res){
+//     // let getAllBlogs = await blog.find({isDeleted: false, isPublished: true})
+//     // if(getAllBlogs.length === 0) return res.status(404).send({status: false, msg:"document not Found"})
+//     // console.log(getAllBlogs);
+//     // res.status(200).send({status:true, msg: getAllBlogs})
+
+//    try{
+//         req.query.isDeleted = false
+//     req.query.isPublished = true
+//     let filter = req.query
+
+
+//     let getDetails = await blog.find(filter)
+//     if(!getDetails.length) return res.status(404).send({status: false, msg:"document not Found"})
+//     res.status(200).send({status: true, msg: getDetails})
+// }
+// catch(err){
+//         console.log(err.message)
+//         res.status(500).send({status: false, msg: err.message})
+// }
+// }
+
+// ________________________________________________________*************_________________________________________________________________
+                            // Created by Gautam_Kumar
 
 const updateBlogs = async (req,res) => {
     try{
@@ -115,6 +144,9 @@ const updateBlogs = async (req,res) => {
     }
 }
 
+// ________________________________________________________*************_________________________________________________________________
+                        // Created by Satyam
+
 const deleteBlogs = async (req, res) => {
     try{
             if (!req.params.blogId.match(/^[0-9a-fA-F]{24}$/)) {
@@ -123,7 +155,7 @@ const deleteBlogs = async (req, res) => {
             let blogData =  await blog.findOne({_id:req.params.blogId})
             if(blogData){
                 await blog.findOneAndUpdate({_id: req.params.blogId},{isDeleted:true})
-                res.status(200).send({status:true, data:"deleted"})
+                res.status(200).end();
             }else{
                 res.status(404).send({status:false, data:null})
             }
@@ -134,14 +166,29 @@ const deleteBlogs = async (req, res) => {
     }
 }
 
+// ________________________________________________________*************_________________________________________________________________
+                        // delete Blogs by Gautam kumar.
+
+// const deleteBlogs = async (req, res) => {
+//     let blogId = req.params.blogId
+//     let checkBlog = await blog.find({_id: blogId, isDeleted: false})
+//     if(!checkBlog.length) return res.status(404).send({status: false, msg: "You are requested to deleted Blog"})
+
+//     let  blogFinal = await blog.findOneAndUpdate({_id: blogId}, {isDeleted: true}, {new: true})
+
+//     res.status(200).send({status:true, msg: blogFinal})
+// }
+
+
+
+// ________________________________________________________*************_________________________________________________________________
+                                // Created by Satyam
+
 const deleteBlogsQP = async (req,res) => {
          try{
                if(!await blog.findOneAndUpdate(req.query,{isDeleted:true}))
                 return res.status(404).send({status:false, data: "document not founding"})
-                res.status(200).end()
-
-
-
+                res.status(200).end();
          }
          catch(err){
               console.log(err)
@@ -149,13 +196,24 @@ const deleteBlogsQP = async (req,res) => {
          }
 }
 
+// ________________________________________________________*************_________________________________________________________________
+                          //Created by Sandeep, Gautam, maulesh
+                          
+// const deleteBlogsQP = async function(req, res){
+//     req.query.isPublished = false
+//     let data = req.query
 
-
-
+//     let blogs = await blog.updateMany(data, {$set:{isDeleted:true}}, {new:true})
+//     console.log(blogs);
+    
+//     if(blogs.matchedCount == 0) return res.status(404).send({status:false, msg: "Document not found"})
+//     req.query.isDeleted = true
+//     let blogData = await blog.find(req.query)
+//     res.status(200).send({status:true, msg: blogData})
+// }
 
 
 
 module.exports = {createAuthor, getBlogs,createBlogs,updateBlogs,deleteBlogs,deleteBlogsQP}
 
 
-// deleteBlogs, deleteBlogsQP
