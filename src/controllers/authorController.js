@@ -97,7 +97,7 @@ catch(err){
 
 const updateBlogs = async (req,res) => {
     try{
-        let findBlog = await blog.findOne({_id:req.params.blogId, isDeleted: false})
+        let findBlog = await blog.find({_id:req.params.blogId, isDeleted: false})
         if(!findBlog.length)
         return res.status(404).send({status: false, msg: "No such documents found"})
         let {title, body, tags, subcategory} = req.body
