@@ -7,7 +7,7 @@ router.post("/author", controller.createAuthor)
 router.post("/blogs", controller.createBlogs)
 router.get("/blogs", controller.getBlogs)
 router.put("/blogs/:blogId", controller.updateBlogs)
-// router.delete("/blogs/:blogId", controller.deleteBlogs)
-// router.delete("/blogs?queryParams", controller.deleteBlogsQP)
+router.delete("/blogs/:blogId", controller.deleteBlogs)
+ router.delete("/blogs", controller.deleteBlogsQP)
 
 module.exports = router;
