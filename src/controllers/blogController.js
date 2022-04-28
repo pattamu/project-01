@@ -7,7 +7,10 @@ const blog = require("../models/blogModel")
 const createBlogs = async (req,res) => {
         try{ 
             /********************************************Authentication************************************************/
-            
+            let authorId = req.body.authorId
+            let  authorLoggedIn = req.headers['Author-login']
+            if(authorId != authorLoggedIn) return res.status(403).send({status:false, msg: "Please use your own author id"})
+
             /********************************************VALIDATION************************************************/
             let data = req.body
             if(!Object.keys(data).length) return res.status(400).send({status: false, msg: "You must enter data."})
