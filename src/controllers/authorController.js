@@ -1,12 +1,23 @@
-const {author, blog} = require("../models/schemas")
-
+const author = require("../models/authorModel")
 
 // ________________________________________________________*************_________________________________________________________________
                             //createAuthor API by Sandeep
 
 const createAuthor = async (req,res) => {
     try{
+        /**************************************VALIDATION********************************************/
         let data = req.body
+        if(!Object.keys(data).length) return res.status(400).status(406).send({status: false, msg: "You must enter data."})
+
+        if(!data.fname.match(/^[a-zA-Z]+$/)) // REGEX using .match()
+        return res.status(422).send({status: false, msg: "Enter a valid First name."})
+        
+        if(!(/^[a-zA-Z]+$/.test(data.lname))) // REGEX using .test()
+        return res.status(422).send({status: false, msg: "Enter a valid Last name."})
+
+        if(!(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(data.email.trim())))
+        return res.status(422).send({status: false, msg: "Enter a valid email address."})
+        /********************************************************************************************/
         let created = await author.create(data)
         res.status(201).send({status: true, data: created})
     }
@@ -16,204 +27,6 @@ const createAuthor = async (req,res) => {
     }
 }
 
-// ________________________________________________________*************_________________________________________________________________
-                            //Create Blog by Moulesh_Chavan
-
-const createBlogs = async (req,res) => {
-        try{
-            let data = req.body
-            if(!await author.findById(req.body.authorId)) 
-            return res.status(208).send({status: false, msg: "Incorrect Author Id"})
-            if(await blog.exists(data)) 
-            return res.status(208).send({status: false, msg: "Blog already present"})
-            let created = await blog.create(data)
-            res.status(201).send({status: true, data: created})
-        }
-        catch(err){
-            console.log(err.message)
-            res.status(500).send({status: false, msg: err.message})
-        }
-    }
-//__________________________________________________*************______________________________________________________________
-                            //createBlog API by Sandeep
-
-// const createBlogs = async (req,res) => {
-//     try{
-//         let data = req.body
-//         if(!await author.findById(req.body.authorId)) 
-//         return res.status(208).send({status: false, msg: "AuthorId is not valid"})
-//         if(await blog.exists(data)) 
-//         return res.status(208).send({status: false, msg: "Blog already present"})
-//         let created = await blog.create(data)
-//         res.status(201).send({status: true, data: created})
-//     }
-//     catch(err){
-//         console.log(err.message)
-//         res.status(500).send({status: false, msg: err.message})
-//     }
-// }
-
-// ________________________________________________________*************_________________________________________________________________
-                            //   createBlog API by Gautam kumar
-
-// const createBlogs = async function(req, res){
-//     try {
-//     let getData =  req.body
-//     let authorId = getData.authorId
-//     console.log(authorId);
-//     if(!authorId){
-//         return res.status(400).send({status: false, msg: "AuthorId must be present"})
-//     }
-//     let authorData = await author.findById(authorId)
-//     if(!authorData){
-//         return res.status(400).send({status: false, msg: "AuthorId must be valid"})
-//     }
-
-//     let blogCreated = await blog.create(getData)
-//     res.status(201).send({status:true, msg: blogCreated})
-// }
-// catch(err){
-//     console.log(err.message)
-//     res.status(500).send({status: false, msg: err.message})
-// }
-// }
-
-// ________________________________________________________*************_________________________________________________________________
-                                    //getBlog API by Sandeep
-
-const getBlogs = async (req,res) => {
-    try{
-        req.query.isDeleted = false
-        req.query.isPublished = true
-        let filter = await blog.find(req.query)
-        if(!filter.length)
-        return res.status(404).send({status: false, msg: "No such documents found"})
-        res.status(200).send({status: true, data: filter})
-    }
-    catch(err){
-        console.log(err.message)
-        res.status(500).send({status: false, msg: err.message})
-    }
-}
-
-// ________________________________________________________*************_________________________________________________________________
-                            //getBlog by Gautam_Kumar
-
-// const getBlogs = async function(req, res){
-//     // let getAllBlogs = await blog.find({isDeleted: false, isPublished: true})
-//     // if(getAllBlogs.length === 0) return res.status(404).send({status: false, msg:"document not Found"})
-//     // console.log(getAllBlogs);
-//     // res.status(200).send({status:true, msg: getAllBlogs})
-
-//    try{
-//         req.query.isDeleted = false
-//     req.query.isPublished = true
-//     let filter = req.query
-
-
-//     let getDetails = await blog.find(filter)
-//     if(!getDetails.length) return res.status(404).send({status: false, msg:"document not Found"})
-//     res.status(200).send({status: true, msg: getDetails})
-// }
-// catch(err){
-//         console.log(err.message)
-//         res.status(500).send({status: false, msg: err.message})
-// }
-// }
-
-// ________________________________________________________*************_________________________________________________________________
-                            // Created by Gautam_Kumar
-
-const updateBlogs = async (req,res) => {
-    try{
-        let findBlog = await blog.find({_id:req.params.blogId, isDeleted: false})
-        if(!findBlog.length)
-        return res.status(404).send({status: false, msg: "No such documents found"})
-        let {title, body, tags, subcategory} = req.body
-        let updatedblog = await blog.findOneAndUpdate({_id: req.params.blogId},
-                                                    {$push: {tags: tags, subcategory:subcategory},
-                                                    title: title, body: body,
-                                                    publishedAt: Date.now(),
-                                                    isPublished: true},
-                                                    {new: true})
-        res.status(200).send({status: true, data: updatedblog})
-    }
-    catch(err){
-        console.log(err.message)
-        res.status(500).send({status: false, msg: err.message})
-    }
-}
-
-// ________________________________________________________*************_________________________________________________________________
-                        // Created by Satyam
-
-const deleteBlogs = async (req, res) => {
-    try{
-            if (!req.params.blogId.match(/^[0-9a-fA-F]{24}$/)) {
-                return res.status(404).send({status:false, data:'Invalid objectId given'})         
-            }
-            let blogData =  await blog.findOne({_id:req.params.blogId})
-            if(blogData){
-                await blog.findOneAndUpdate({_id: req.params.blogId},{isDeleted:true})
-                res.status(200).end();
-            }else{
-                res.status(404).send({status:false, data:null})
-            }
-        }
-    catch(err){
-        console.log(err.message)
-        res.status(500).send({status:false, msg: (err.message)})
-    }
-}
-
-// ________________________________________________________*************_________________________________________________________________
-                        // delete Blogs by Gautam kumar.
-
-// const deleteBlogs = async (req, res) => {
-//     let blogId = req.params.blogId
-//     let checkBlog = await blog.find({_id: blogId, isDeleted: false})
-//     if(!checkBlog.length) return res.status(404).send({status: false, msg: "You are requested to deleted Blog"})
-
-//     let  blogFinal = await blog.findOneAndUpdate({_id: blogId}, {isDeleted: true}, {new: true})
-
-//     res.status(200).send({status:true, msg: blogFinal})
-// }
-
-
-
-// ________________________________________________________*************_________________________________________________________________
-                                // Created by Satyam
-
-const deleteBlogsQP = async (req,res) => {
-         try{
-               if(!await blog.findOneAndUpdate(req.query,{isDeleted:true}))
-                return res.status(404).send({status:false, data: "document not founding"})
-                res.status(200).end();
-         }
-         catch(err){
-              console.log(err)
-              res.status(500).send({status:false, msg: err.message})
-         }
-}
-
-// ________________________________________________________*************_________________________________________________________________
-                          //Created by Sandeep, Gautam, maulesh
-                          
-// const deleteBlogsQP = async function(req, res){
-//     req.query.isPublished = false
-//     let data = req.query
-
-//     let blogs = await blog.updateMany(data, {$set:{isDeleted:true}}, {new:true})
-//     console.log(blogs);
-    
-//     if(blogs.matchedCount == 0) return res.status(404).send({status:false, msg: "Document not found"})
-//     req.query.isDeleted = true
-//     let blogData = await blog.find(req.query)
-//     res.status(200).send({status:true, msg: blogData})
-// }
-
-
-
-module.exports = {createAuthor, getBlogs,createBlogs,updateBlogs,deleteBlogs,deleteBlogsQP}
+module.exports = createAuthor
 
 
