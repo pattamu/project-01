@@ -35,7 +35,6 @@ const authorLogin = async(req, res, next) => {
        },
        "Best-Author"  //Secret key
        );
-
        res.status(201).send({status:true, msg: token})
 
        next();

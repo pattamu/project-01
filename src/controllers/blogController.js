@@ -1,3 +1,4 @@
+const { findOne } = require("../models/authorModel")
 const author = require("../models/authorModel")
 const blog = require("../models/blogModel")
 
@@ -6,7 +7,7 @@ const blog = require("../models/blogModel")
 
 const createBlogs = async (req,res) => {
         try{ 
-            /********************************************Authentication************************************************/
+            /********************************************Authentication (Gautam)************************************************/
             let authorId = req.body.authorId
             let  authorLoggedIn = req.headers['Author-login']
             if(authorId != authorLoggedIn) return res.status(403).send({status:false, msg: "Please use your own author id"})
@@ -79,7 +80,6 @@ const createBlogs = async (req,res) => {
 
 const getBlogs = async (req,res) => {
     try{
-        
         if(req.query.title && !req.query.body) delete req.query.title
         else if(req.query.body && !req.query.title) delete req.query.body
         else if(req.query.title && req.query.body){
@@ -90,7 +90,8 @@ const getBlogs = async (req,res) => {
         return res.status(403).send({status: false, msg: "No filters applied or apply filters apart from 'title' and 'body'."})
         req.query.isDeleted = false
         req.query.isPublished = true
-        let filter = await blog.find(req.query)
+        let filter = (await blog.find(req.query)).filter(x => x.authorId == req.headers['Author-login'])//<---VALIDATION--->
+        //line 65 - filter is used to get all blog datas of the logged in user only
         if(!filter.length)
         return res.status(404).send({status: false, msg: "No such documents found"})
         res.status(200).send({status: true, data: filter})
@@ -100,7 +101,6 @@ const getBlogs = async (req,res) => {
         res.status(500).send({status: false, msg: err.message})
     }
 }
-
 // ________________________________________________________*************_________________________________________________________________
                             //getBlog by Gautam_Kumar
 
