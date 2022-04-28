@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+var jwt = require("jsonwebtoken");
 
 const authorSchema = mongoose.Schema({ 
     fname: {type: String, required: true}, 
@@ -13,6 +14,15 @@ const authorSchema = mongoose.Schema({
     }, 
     password: {type: String, required: true} 
 }, { timestamps: true })
+
+authorSchema.methods.generateAuthToken = async function() {
+    const User = this    
+    const token = jwt.sign({_id:User._id, authorName: `${User.fname}  ${User.lname}` },'author')
+    return token
+}
+
+
+
 
 const authorModel = mongoose.model('Author', authorSchema) //authors
 
