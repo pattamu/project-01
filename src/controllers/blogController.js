@@ -6,6 +6,8 @@ const blog = require("../models/blogModel")
 
 const createBlogs = async (req,res) => {
         try{ 
+            /********************************************Authentication************************************************/
+            
             /********************************************VALIDATION************************************************/
             let data = req.body
             if(!Object.keys(data).length) return res.status(400).send({status: false, msg: "You must enter data."})
@@ -74,6 +76,7 @@ const createBlogs = async (req,res) => {
 
 const getBlogs = async (req,res) => {
     try{
+        
         if(req.query.title && !req.query.body) delete req.query.title
         else if(req.query.body && !req.query.title) delete req.query.body
         else if(req.query.title && req.query.body){
