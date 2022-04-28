@@ -1,4 +1,3 @@
-const { findOne } = require("../models/authorModel")
 const author = require("../models/authorModel")
 const blog = require("../models/blogModel")
 
@@ -140,7 +139,10 @@ const updateBlogs = async (req,res) => {
         let findBlog = await blog.findOne({_id:req.params.blogId, isDeleted: false})
         if(!findBlog)
         return res.status(404).send({status: false, msg: "No such documents found"})
-        /***********************************************************************************************************/
+        /******************************Authentication Check*****************************/
+        if(req.headers['Author-login'] != findBlog.authorId)
+        return res.status(401).send({status: false, msg: "You can't update this Blog."})
+        /*********************************************************************************/
         let {title, body, tags, subcategory} = req.body
         if(!req.body) return res.status(400).send({status: false, msg: "You must enter data which you want to update."})
         let updatedblog = await blog.findOneAndUpdate({_id: req.params.blogId},
@@ -162,17 +164,22 @@ const updateBlogs = async (req,res) => {
 
 const deleteBlogs = async (req, res) => {
     try{
-            if (!req.params.blogId.match(/^[0-9a-fA-F]{24}$/)) {
-                return res.status(404).send({status:false, data:'Invalid objectId given'})         
-            }
-            let blogData =  await blog.findOne({_id:req.params.blogId})
-            if(blogData){
-                await blog.findOneAndUpdate({_id: req.params.blogId},{isDeleted:true})
-                res.status(200).end();
-            }else{
-                res.status(404).send({status:false, data:null})
-            }
+        /*******************************VALIDATION***********************************/
+        if (!req.params.blogId.match(/^[0-9a-fA-F]{24}$/)) 
+            return res.status(404).send({status:false, data:'Invalid objectId given in params'}) 
+        /******************************Authentication Check*****************************/
+        let authCheck = await blog.findById(req.params.blogId)
+        if(authCheck.authorId != req.headers['Author-login'])
+            return res.status(401).send({status: false, msg: "You don't have authority to delete this Blog."})
+        /*********************************************************************************/
+        let blogData =  await blog.findOne({_id:req.params.blogId})
+        if(blogData){
+            await blog.findOneAndUpdate({_id:req.params.blogId},{isDeleted:true})
+            res.status(200).end();
+        }else{
+            res.status(404).send({status:false, data:null})
         }
+    }
     catch(err){
         console.log(err.message)
         res.status(500).send({status:false, msg: (err.message)})
@@ -199,10 +206,16 @@ const deleteBlogs = async (req, res) => {
 
 const deleteBlogsQP = async (req,res) => {
     try{
+        /****************************VALIDATION*************************/
+        if(!Object.keys(req.query).length) 
+        return res.status(406).send({status: false, msg: "Please select some filters for deletion."})
+        /******************************Authentication Check*****************************/
         req.query.isPublished = false
+        let findBlogs = (await blog.find(req.query)).filter(x => x.authorId == req.headers['Author-login'])
+        if(!findBlogs.length) return res.status(404).send({status: false, msg: "No document found"})
+        /*********************************************************************************/
         let data = req.query
         let blogs = await blog.updateMany(data,{isDeleted:true})
-        console.log(blogs)
         if(blogs.matchedCount == 0) 
         return res.status(404).send({status:false, data: "document not found."})
         res.status(200).end();

@@ -9,9 +9,10 @@ const middleWare = require("../middleware/autharization")
 router.post("/author", authorController)
 router.post("/blogs", middleWare,  blogController.createBlogs)
 router.get("/blogs", middleWare, blogController.getBlogs)
-router.put("/blogs/:blogId", blogController.updateBlogs)
-router.delete("/blogs/:blogId", blogController.deleteBlogs)
-router.delete("/blogs", blogController.deleteBlogsQP)
+router.put("/blogs/:blogId", middleWare, blogController.updateBlogs)
+router.delete("/blogs/:blogId",middleWare, blogController.deleteBlogs)
+router.delete("/blogs", middleWare, blogController.deleteBlogsQP)
+
 router.post("/login", loginController )
 
 
