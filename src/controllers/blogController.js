@@ -4,9 +4,9 @@ const blog = require("../models/blogModel")
 const createBlogs = async (req,res) => {
         try{ 
             /**************************************Authentication Check*******************************************/
-            let authorId = req.body.authorId
-            let authorLoggedIn = req.headers['Author-login']
-            if(authorId != authorLoggedIn) return res.status(403).send({status:false, msg: "Please use your own author id"})
+            // let authorId = req.body.authorId
+            // let authorLoggedIn = req.headers['Author-login']
+            // if(authorId != authorLoggedIn) return res.status(403).send({status:false, msg: "Please use your own author id"})
             /********************************************VALIDATION************************************************/
             let data = req.body
             if(!Object.keys(data).length) return res.status(400).send({status: false, msg: "You must enter data."})
@@ -40,7 +40,7 @@ const getBlogs = async (req,res) => {
         return res.status(403).send({status: false, msg: "No filters applied or apply filters apart from 'title' and 'body'."})
         req.query.isDeleted = false
         req.query.isPublished = true
-        let filter = (await blog.find(req.query)).filter(x => x.authorId == req.headers['Author-login'])//<---AUTHENTICATION Check--->
+        let filter = (await blog.find(req.query))//.filter(x => x.authorId == req.headers['Author-login'])//<---AUTHENTICATION Check--->
         //line 43 - filter is used to get all blog datas of the logged in user only
         if(!filter.length)
         return res.status(404).send({status: false, msg: "No such documents found"})
