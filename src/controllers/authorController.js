@@ -1,13 +1,10 @@
 const author = require("../models/authorModel")
 
-// ________________________________________________________*************_________________________________________________________________
-                            //createAuthor API by Sandeep
-
 const createAuthor = async (req,res) => {
     try{
         /**************************************VALIDATION********************************************/
         let data = req.body
-        if(!Object.keys(data).length) return res.status(400).status(406).send({status: false, msg: "You must enter data."})
+        if(!Object.keys(data).length) return res.status(406).send({status: false, msg: "You must enter data."})
 
         if(!data.fname.match(/^[a-zA-Z]+$/)) // REGEX using .match()
         return res.status(422).send({status: false, msg: "Enter a valid First name."})
