@@ -15,7 +15,7 @@ const generateAuthToken = function(authorData) {
 
 const authorLogin = async(req, res) => {
     try{
-        if(!Object.keys(req.body).length) res.status().send({status: false, msg: "Must enter email and password."})
+        if(Object.keys(req.body).length <= 1) res.status().send({status: false, msg: "Must enter email and password."})
         const email = req.body.email;
         const password = req.body.password;
         const authorData = await author.findOne({email:email,password:password});
