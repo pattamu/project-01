@@ -10,11 +10,13 @@ const createBlogs = async (req,res) => {
             // if(authorId != authorLoggedIn) return res.status(401).send({status:false, msg: "Please use your own author id"})
             /********************************************VALIDATION************************************************/
             let data = req.body
-            data.tags = [...new Set(data.tags)]
-            data.subcategory = [...new Set(data.subcategory)]
-            if(data.isPublished){
+            if(data.tags)
+                data.tags = [...new Set(data.tags)]
+            if(data.subcategory)
+                data.subcategory = [...new Set(data.subcategory)]
+            if(data.isPublished)
                 data.publishedAt = Date.now()
-            }            
+                           
             if(!Object.keys(data).length) 
                 return res.status(400).send({status: false, msg: "You must enter data."})
             if(!mongoose.isValidObjectId(data.authorId))
