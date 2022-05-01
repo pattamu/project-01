@@ -10,6 +10,11 @@ const createBlogs = async (req,res) => {
             // if(authorId != authorLoggedIn) return res.status(401).send({status:false, msg: "Please use your own author id"})
             /********************************************VALIDATION************************************************/
             let data = req.body
+            data.tags = [...new Set(data.tags)]
+            data.subcategory = [...new Set(data.subcategory)]
+            if(data.isPublished){
+                data.publishedAt = Date.now()
+            }            
             if(!Object.keys(data).length) 
                 return res.status(400).send({status: false, msg: "You must enter data."})
             if(!mongoose.isValidObjectId(data.authorId))
@@ -31,16 +36,9 @@ const createBlogs = async (req,res) => {
 
 const getBlogs = async (req,res) => {
     try{
-        if(req.query.title && !req.query.body) delete req.query.title
-        else if(req.query.body && !req.query.title) delete req.query.body
-        else if(req.query.title && req.query.body){
-            delete req.query.title
-            delete req.query.body
-        }
-        if(!Object.keys(req.query).length) {
-            let filter = await blog.find({isDeleted: false, isPublished: true})
-            return res.status(200).send({status: true, data: filter})
-        }
+        delete req.query.title
+        delete req.query.body
+        
         let filter = await blog.find({$and: [req.query, {isDeleted: false}, {isPublished: true}]})
         if(!filter.length)
             return res.status(404).send({status: false, msg: "No such documents found"})
@@ -57,9 +55,9 @@ const updateBlogs = async (req,res) => {
     try{
         /*************************************VALIDATION****************************************/
         if(!Object.keys(req.body).length) 
-            return res.status(406).send({status: false, msg: "No data provided to update."})
+            return res.status(400).send({status: false, msg: "No data provided to update."})
         if(!mongoose.isValidObjectId(req.params.blogId))
-            return res.send({status: false, msg: "Invalid objectId."})
+            return res.status(400).send({status: false, msg: "Invalid objectId."})
 
         let findBlog = await blog.findOne({_id:req.params.blogId, isDeleted: false})
         if(!findBlog)
