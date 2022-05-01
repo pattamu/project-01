@@ -4,7 +4,7 @@ const mongoose = require("mongoose")
 
 const createBlogs = async (req,res) => {
         try{ 
-            /**************************************Authentication Check*******************************************/
+            /**************************************Authorization Check*******************************************/
             // let authorId = req.body.authorId
             // let authorLoggedIn = req.headers['Author-login']
             // if(authorId != authorLoggedIn) return res.status(401).send({status:false, msg: "Please use your own author id"})
@@ -64,7 +64,7 @@ const updateBlogs = async (req,res) => {
         let findBlog = await blog.findOne({_id:req.params.blogId, isDeleted: false})
         if(!findBlog)
             return res.status(404).send({status: false, msg: "No such documents found"})
-        /******************************Authentication Check*****************************/
+        /******************************Authorization Check*****************************/
         if(req.headers['Author-login'] != findBlog.authorId)
             return res.status(401).send({status: false, msg: "You can't update this Blog."})
         /*********************************************************************************/
@@ -89,7 +89,7 @@ const deleteBlogs = async (req, res) => {
         /*******************************VALIDATION***********************************/
         if(!mongoose.isValidObjectId(req.params.blogId)) 
             return res.status(404).send({status:false, msg:'Invalid objectId.'}) 
-        /******************************Authentication Check*****************************/
+        /******************************Authorization Check*****************************/
         let authCheck = await blog.findById(req.params.blogId)
         if(authCheck.authorId != req.headers['Author-login'])
             return res.status(401).send({status: false, msg: "You don't have authority to delete this Blog."})
@@ -114,7 +114,7 @@ const deleteBlogsQP = async (req,res) => {
         /***********************************VALIDATION****************************************/
         if(!Object.keys(req.query).length) 
             return res.status(406).send({status: false, msg: "Please select some filters for deletion."})
-        /**********************************Authentication Check********************************/
+        /**********************************Authorization Check********************************/
         let id = req.headers['Author-login']
         let findBlogs = (await blog.find({$and: [req.query,{authorId: id}, {isPublished: false}]}))
         if(!findBlogs.length) 
