@@ -67,7 +67,6 @@ const updateBlogs = async (req,res) => {
             return res.status(401).send({status: false, msg: "You can't update this Blog."})
         /*********************************************************************************/
         let {title, body, tags, subcategory} = req.body
-        if(!req.body) return res.status(400).send({status: false, msg: "You must enter data which you want to update."})
         let updatedblog = await blog.findOneAndUpdate({_id: req.params.blogId, isDeleted: false},
                                                     {$addToSet: {tags: {$each:tags||[]},subcategory:{$each:subcategory||[]}},
                                                     title: title, body: body,
