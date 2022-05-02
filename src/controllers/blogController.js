@@ -107,7 +107,7 @@ const deleteBlogsQP = async (req,res) => {
     try{
         /***********************************VALIDATION****************************************/
         if(!Object.keys(req.query).length) 
-            return res.status(406).send({status: false, msg: "Please select some filters for deletion."})
+            return res.status(400).send({status: false, msg: "Please select some filters for deletion."})
         /**********************************Authorization Check********************************/
         delete req.query.authorId
         let id = req.headers['Author-login']
