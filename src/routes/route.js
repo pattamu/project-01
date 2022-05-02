@@ -6,7 +6,7 @@ const loginController = require("../controllers/loginController")
 const middleWare = require("../middleware/autharization")
 
 //Author-Blog route Hndlers
-router.post("/author", authorController)
+router.post("/authors", authorController)
 router.post("/blogs", middleWare,  blogController.createBlogs)
 router.get("/blogs", middleWare, blogController.getBlogs)
 router.put("/blogs/:blogId", middleWare, blogController.updateBlogs)
