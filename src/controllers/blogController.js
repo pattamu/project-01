@@ -85,7 +85,7 @@ const deleteBlogs = async (req, res) => {
     try{
         /*******************************VALIDATION***********************************/
         if(!mongoose.isValidObjectId(req.params.blogId)) 
-            return res.status(404).send({status:false, msg:'Invalid Blog objectId.'}) 
+            return res.status(400).send({status:false, msg:'Invalid Blog objectId.'}) 
         /******************************Authorization Check*****************************/
         let authCheck = await blog.findById(req.params.blogId)
         if(authCheck.authorId != req.headers['Author-login'])
