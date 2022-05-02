@@ -12,6 +12,14 @@ const createBlogs = async (req,res) => {
             let data = req.body
             if(!Object.keys(data).length) 
                 return res.status(400).send({status: false, msg: "You must enter data to create a Blog."})
+            if(!data.title)
+                return res.status(400).send({status: false, msg: "Title must be present."})
+            if(!data.body)
+                return res.status(400).send({status: false, msg: "Body must be present."})
+            if(!data.authorId)
+                return res.status(400).send({status: false, msg: "AuthorId must be present."})
+            if(!data.category)
+                return res.status(400).send({status: false, msg: "Category must be present."})
             if(!mongoose.isValidObjectId(data.authorId))
                 return res.status(400).send({status: false, msg: "Invalid Author ObjectId."})
             /*******************************************************************************************************/
@@ -35,10 +43,11 @@ const createBlogs = async (req,res) => {
 
 const getBlogs = async (req,res) => {
     try{
-        delete req.query.title
-        delete req.query.body
+        // delete req.query.title
+        // delete req.query.body
+        console.log(req.query)
         let options = [{authorId:req.query.authorId}, {tags: req.query.tags}, {category:req.query.category}, {subcategory:req.query.subcategory}]
-        
+
         if(!Object.keys(req.query).length){
             let filter = await blog.find({isDeleted: false, isPublished: true}).populate('authorId')
             return res.status(200).send({status:false, filter})
