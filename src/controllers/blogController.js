@@ -37,8 +37,14 @@ const getBlogs = async (req,res) => {
     try{
         delete req.query.title
         delete req.query.body
+        let options = [{authorId:req.query.authorId}, {tags: req.query.tags}, {category:req.query.category}, {subcategory:req.query.subcategory}]
         
-        let filter = await blog.find({$and: [req.query, {isDeleted: false}, {isPublished: true}]}).populate('authorId')
+        if(!Object.keys(req.query).length){
+            let filter = await blog.find({isDeleted: false, isPublished: true}).populate('authorId')
+            return res.status(200).send({status:false, filter})
+        }
+        // let filter = await blog.find({$and: [req.query, {isDeleted: false}, {isPublished: true}]}).populate('authorId')
+        let filter = await blog.find({$or:options,isDeleted: false, isPublished: true}).populate('authorId')
         if(!filter.length)
             return res.status(404).send({status: false, msg: "No such documents found"})
         res.status(200).send({status: true, data: filter})
@@ -91,7 +97,7 @@ const deleteBlogs = async (req, res) => {
         if(authCheck.authorId != req.headers['Author-login'])
             return res.status(401).send({status: false, msg: "You don't have authority to delete this Blog."})
         /*********************************************************************************/
-        let deletedBlog = await blog.findOneAndUpdate({_id:req.params.blogId,isDeleted:false},{isDeleted:true})
+        let deletedBlog = await blog.findOneAndUpdate({_id:req.params.blogId,isDeleted:false},{isDeleted:true, deletedAt: Date.now()})
         if(!deletedBlog)
             return res.status(404).send({status:false, msg:"No Document found."})
         res.status(200).end();
@@ -115,7 +121,7 @@ const deleteBlogsQP = async (req,res) => {
         if(!findBlogs.length) 
             return res.status(404).send({status: false, msg: "No documents found."})
         /***************************************************************************************/
-        let blogs = await blog.updateMany({_id: findBlogs},{isDeleted:true})
+        let blogs = await blog.updateMany({_id: findBlogs},{isDeleted:true, deletedAt: Date.now()})
         if(blogs.matchedCount == 0) 
             return res.status(404).send({status:false, data: "No documents found."})
         res.status(200).send({status: true, data: `Total deleted document count: ${blogs.modifiedCount}`});
