@@ -38,7 +38,7 @@ const getBlogs = async (req,res) => {
         delete req.query.title
         delete req.query.body
         
-        let filter = await blog.find({$and: [req.query, {isDeleted: false}, {isPublished: true}]})
+        let filter = await blog.find({$and: [req.query, {isDeleted: false}, {isPublished: true}]}).populate('authorId')
         if(!filter.length)
             return res.status(404).send({status: false, msg: "No such documents found"})
         res.status(200).send({status: true, data: filter})
@@ -71,7 +71,7 @@ const updateBlogs = async (req,res) => {
                                                     title: title, body: body,
                                                     publishedAt: Date.now(),
                                                     isPublished: true},
-                                                    {new: true})
+                                                    {new: true}).populate('authorId')
         res.status(200).send({status: true, data: updatedblog})
     }
     catch(err){
