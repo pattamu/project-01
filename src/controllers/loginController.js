@@ -26,7 +26,7 @@ const authorLogin = async(req, res) => {
           const token = generateAuthToken(authorData);
           res.setHeader('x-api-key', token)
           // res.header('x-api-key', token)//This can be written as well to set header in response header inplace of line 25
-          res.status(200).send({status:true,data:"Token is sent to the Header"});
+          res.status(201).send({status:true,msg: "token generated successfully.", data:{token:token}});
         }else {
             res.status(400).send({status:false,message:"Invalid Credentials"});
         }
