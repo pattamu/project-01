@@ -43,8 +43,8 @@ const createBlogs = async (req,res) => {
 
 const getBlogs = async (req,res) => {
     try{
-        // delete req.query.title
-        // delete req.query.body
+        delete req.query.title
+        delete req.query.body
         console.log(req.query)
         let options = [{authorId:req.query.authorId}, {tags: req.query.tags}, {category:req.query.category}, {subcategory:req.query.subcategory}]
 
@@ -96,7 +96,7 @@ const updateBlogs = async (req,res) => {
 }
 
 
-const deleteBlogs = async (req, res) => {
+const deleteBlog = async (req, res) => {
     try{
         /*******************************VALIDATION***********************************/
         if(!mongoose.isValidObjectId(req.params.blogId)) 
@@ -118,7 +118,7 @@ const deleteBlogs = async (req, res) => {
 }
 
 
-const deleteBlogsQP = async (req,res) => {
+const deleteBlogs = async (req,res) => {
     try{
         /***********************************VALIDATION****************************************/
         if(!Object.keys(req.query).length) 
@@ -141,6 +141,6 @@ const deleteBlogsQP = async (req,res) => {
     }
 }
 
-module.exports = {getBlogs,createBlogs,updateBlogs,deleteBlogs,deleteBlogsQP}
+module.exports = {getBlogs,createBlogs,updateBlogs,deleteBlog,deleteBlogs}
 
 
